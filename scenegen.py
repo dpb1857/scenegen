@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# pylint: disable=broad-exception-caught
 # pylint: disable=broad-exception-raised
 # pylint: disable=line-too-long
 # pylint: disable=missing-class-docstring
@@ -22,7 +23,7 @@ import requests
 ## Globals
 ##
 
-if False:
+if False: # pylint: disable=using-constant-test
     SLIDES_DIRECTORY = "/tmp/sldes.pdf"
     TEMPLATES_FILE = "templates.json"
     SCENES_DIRECTORY = "/tmp/"
