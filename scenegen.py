@@ -28,9 +28,9 @@ if False: # pylint: disable=using-constant-test
     TEMPLATES_FILE = "templates.json"
     SCENES_DIRECTORY = "/tmp/"
 else:
-    SLIDES_DIRECTORY = "s:/Slides/"
-    TEMPLATES_FILE = "c:/Users/dpb/AppData/Roaming/obs-studio/basic/scenes/templates.json"
-    SCENES_DIRECTORY = "c:/Users/dpb/AppData/Roaming/obs-studio/basic/scenes/"
+    SLIDES_DIRECTORY = "c:/Users/SaintMarks/Slides/"
+    TEMPLATES_FILE = "c:/Users/SaintMarks/AppData/Roaming/obs-studio/basic/scenes/templates.json"
+    SCENES_DIRECTORY = "c:/Users/SaintMarks/AppData/Roaming/obs-studio/basic/scenes/"
 
 ##
 ## Download the runlist from a Google Sheet
