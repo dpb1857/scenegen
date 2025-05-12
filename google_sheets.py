@@ -44,6 +44,25 @@ def get_sheet_urls(spreadsheet_url, api_key):
 ## Download the runlist from a Google Sheet
 ##
 
+def extract_sheet_id_gid(url):
+    """Extract Google Sheet ID from URL."""
+    # Pattern for Google Sheets URLs
+    pattern = r'https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9_-]+)'
+    match = re.search(pattern, url)
+
+    gidpatt = r'gid=([0-9]+)'
+    gidmatch = re.search(gidpatt, url)
+    if gidmatch:
+        gid = gidmatch.group(1)
+    else:
+        gid = '0'
+
+    if match:
+        return match.group(1), gid
+
+    raise ValueError("Invalid Google Sheets URL. Please provide a URL in the format: "
+                     "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/...")
+
 def download_sheet(url):
     """
     Download a Google Sheet and return its contents as a list of rows.
@@ -58,25 +77,6 @@ def download_sheet(url):
         ValueError: If the URL is not a valid Google Sheets URL
         Exception: If there's an error downloading the sheet
     """
-
-    def extract_sheet_id_gid(url):
-        """Extract Google Sheet ID from URL."""
-        # Pattern for Google Sheets URLs
-        pattern = r'https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9_-]+)'
-        match = re.search(pattern, url)
-
-        gidpatt = r'gid=([0-9]+)'
-        gidmatch = re.search(gidpatt, url)
-        if gidmatch:
-            gid = gidmatch.group(1)
-        else:
-            gid = '0'
-
-        if match:
-            return match.group(1), gid
-
-        raise ValueError("Invalid Google Sheets URL. Please provide a URL in the format: "
-                         "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/...")
 
     # Extract the Sheet ID from the URL
     sheet_id, sheet_gid = extract_sheet_id_gid(url)

@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
-import os
+# pylint: disable=broad-exception-caught
+# pylint: disable=broad-exception-raised
+# pylint: disable=line-too-long
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+# pylint: disable=too-many-instance-attributes
 
 import tkinter as tk
 from tkinter import ttk
@@ -8,7 +13,8 @@ from tkinter import messagebox
 
 import config
 import next_sunday
-
+import scenes
+import validation
 
 class SimpleInputDialog:
     def __init__(self, master, default_url="", default_filename="output.csv"):
@@ -71,7 +77,7 @@ class SimpleInputDialog:
         # Submit button
         self.submit_button = ttk.Button(
             self.button_frame,
-            text="Download",
+            text="Generate Scenes",
             command=self.submit
         )
         self.submit_button.pack(side=tk.RIGHT, padx=5)
@@ -105,28 +111,33 @@ class SimpleInputDialog:
             self.filename_entry.focus_set()
             return
 
-        # Show a success message
-        messagebox.showinfo(
-            "Success",
-            f"Download request submitted!\n\nScene URL: {url}\nFilename: {filename}"
-        )
+        if (error := validation.can_get_sheetmap(url, filename)) is not None:
+            messagebox.showerror("Error", f"Problems with URL: {error}")
+            self.url_entry.focus_set()
+            return
+
+        if (error := validation.validate_config()) is not None:
+            messagebox.showerror("Error", f"Problems with URL: {error}")
+            self.url_entry.focus_set()
+            return
 
         # Process the information
-        self.process_download(url, filename)
+        try:
+            self.process_runlist(url, filename)
+            # Show a success message
+            messagebox.showinfo(
+                "Success",
+                f"Scenelist generated in {filename}"
+            )
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            messagebox.showerror("Error", f"Something went wrong: {e}")
 
         # Close the dialog
         self.master.destroy()
 
-    def process_download(self, url, filename):
-        # This is a placeholder function where you would implement the actual download logic
-        print(f"Starting download from: {url}")
-        print(f"Saving to: {filename}")
+    def process_runlist(self, url, filename):
+        scenes.generate_scenes(filename)
 
-        # Example: You could write the information to a file for now
-        with open("download_queue.txt", "a") as file:
-            file.write(f"URL: {url}, Filename: {filename}\n")
-
-        # Later you could replace this with actual download functionality
 
 def main():
     root = tk.Tk()
@@ -142,6 +153,6 @@ def main():
     return app.url_var.get(), app.filename_var.get()
 
 if __name__ == "__main__":
-    url, filename = main()
-    print(f"Selected URL: {url}")
-    print(f"Selected filename: {filename}")
+    main_url, main_filename = main()
+    print(f"Selected URL: {main_url}")
+    print(f"Selected filename: {main_filename}")
