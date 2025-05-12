@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 
+import os
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import os
+
+import config
+import next_sunday
+
 
 class SimpleInputDialog:
     def __init__(self, master, default_url="", default_filename="output.csv"):
@@ -11,7 +16,7 @@ class SimpleInputDialog:
         master.title("Download Scene")
 
         # Set window size and position it in center of screen
-        window_width = 800  # Doubled from 400 to 800; WIDTH
+        window_width = 1200  # Doubled from 400 to 800; WIDTH
         window_height = 200
         screen_width = master.winfo_screenwidth()
         screen_height = master.winfo_screenheight()
@@ -34,7 +39,7 @@ class SimpleInputDialog:
         # Add a title label
         self.title_label = ttk.Label(
             self.main_frame,
-            text="Enter Download Information",
+            text="Enter Scene Generation Information",
             font=("Segoe UI", 14)
         )
         self.title_label.pack(pady=(0, 20))
@@ -48,7 +53,7 @@ class SimpleInputDialog:
         self.url_label.grid(row=0, column=0, sticky=tk.W, pady=5)
 
         self.url_var = tk.StringVar(value=default_url)
-        self.url_entry = ttk.Entry(self.form_frame, width=60, textvariable=self.url_var)  # Doubled from 30 to 60; WIDTH
+        self.url_entry = ttk.Entry(self.form_frame, width=110, textvariable=self.url_var)  # Doubled from 30 to 60; WIDTH
         self.url_entry.grid(row=0, column=1, sticky=tk.W, pady=5, padx=5)
 
         # Filename input
@@ -56,7 +61,7 @@ class SimpleInputDialog:
         self.filename_label.grid(row=1, column=0, sticky=tk.W, pady=5)
 
         self.filename_var = tk.StringVar(value=default_filename)
-        self.filename_entry = ttk.Entry(self.form_frame, width=60, textvariable=self.filename_var)  # Doubled from 30 to 60; WIDTH
+        self.filename_entry = ttk.Entry(self.form_frame, width=110, textvariable=self.filename_var)  # Doubled from 30 to 60; WIDTH
         self.filename_entry.grid(row=1, column=1, sticky=tk.W, pady=5, padx=5)
 
         # Button frame
@@ -127,8 +132,8 @@ def main():
     root = tk.Tk()
 
     # You can specify default values here
-    default_url = "https://docs.google.com/spreadsheets/d/"
-    default_filename = "data.csv"
+    default_url = config.SCENES_URL
+    default_filename = next_sunday.next_sunday_noon()
 
     app = SimpleInputDialog(root, default_url, default_filename)
     root.mainloop()
