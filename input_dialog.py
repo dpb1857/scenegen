@@ -11,7 +11,7 @@ class SimpleInputDialog:
         master.title("Download Scene")
 
         # Set window size and position it in center of screen
-        window_width = 400
+        window_width = 800  # Doubled from 400 to 800; WIDTH
         window_height = 200
         screen_width = master.winfo_screenwidth()
         screen_height = master.winfo_screenheight()
@@ -27,7 +27,8 @@ class SimpleInputDialog:
             pass
 
         # Create main frame with padding
-        self.main_frame = ttk.Frame(master, padding=(20, 10))
+        # self.main_frame = ttk.Frame(master, padding=(20, 10))
+        self.main_frame = ttk.Frame(master, padding=(40, 10))  # Increased horizontal padding from 20 to 40; WIDTH
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Add a title label
@@ -47,7 +48,7 @@ class SimpleInputDialog:
         self.url_label.grid(row=0, column=0, sticky=tk.W, pady=5)
 
         self.url_var = tk.StringVar(value=default_url)
-        self.url_entry = ttk.Entry(self.form_frame, width=30, textvariable=self.url_var)
+        self.url_entry = ttk.Entry(self.form_frame, width=60, textvariable=self.url_var)  # Doubled from 30 to 60; WIDTH
         self.url_entry.grid(row=0, column=1, sticky=tk.W, pady=5, padx=5)
 
         # Filename input
@@ -55,7 +56,7 @@ class SimpleInputDialog:
         self.filename_label.grid(row=1, column=0, sticky=tk.W, pady=5)
 
         self.filename_var = tk.StringVar(value=default_filename)
-        self.filename_entry = ttk.Entry(self.form_frame, width=30, textvariable=self.filename_var)
+        self.filename_entry = ttk.Entry(self.form_frame, width=60, textvariable=self.filename_var)  # Doubled from 30 to 60; WIDTH
         self.filename_entry.grid(row=1, column=1, sticky=tk.W, pady=5, padx=5)
 
         # Button frame
