@@ -13,6 +13,7 @@ import uuid
 
 import apikey
 import config
+import google_drive as gd
 import google_sheets as gs
 
 
@@ -79,13 +80,13 @@ def _generate_scenes(runlist, templates, scenelist_name, pdf_url):
     templates["name"] = scenelist_name
     return templates
 
-def generate_scenes(scenelist_name):
+def generate_scenes(url, scenelist_name):
 
     obs_scenes_directory = config.OBS_SCENES_DIRECTORY
     pdf_slides_directory = config.PDF_SLIDES_DIRECTORY
     templates_fname = config.TEMPLATES_FNAME
 
-    scenes_map = gs.get_sheet_urls(config.SCENES_URL, apikey.API_KEY)
+    scenes_map = gs.get_sheet_urls(url, apikey.API_KEY)
     runlist_url = scenes_map[scenelist_name]
     runlist_data = gs.download_sheet(runlist_url)
 
@@ -99,3 +100,14 @@ def generate_scenes(scenelist_name):
 
     with open(f"{obs_scenes_directory}/{scenelist_name}", "w", encoding="utf-8") as file:
         json.dump(scenes, file, indent=4, ensure_ascii=False)
+
+def download_pdf(url, filename):
+    pdf_slides_directory = config.PDF_SLIDES_DIRECTORY
+
+    pdf_filename = f"{pdf_slides_directory}Slides-{filename}.pdf"
+
+    pdf_url_data = gs.download_sheet(url)
+    pdf_map = dict(pdf_url_data)
+    if filename in pdf_map:
+        pdf_url = pdf_map[filename]
+        gd.download_to_local_filesystem(pdf_url, pdf_filename)

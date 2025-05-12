@@ -136,8 +136,8 @@ class SimpleInputDialog:
         self.master.destroy()
 
     def process_runlist(self, url, filename):
-        scenes.generate_scenes(filename)
-
+        scenes.generate_scenes(url, filename)
+        scenes.download_pdf(url, filename)
 
 def main():
     root = tk.Tk()
