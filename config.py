@@ -1,8 +1,8 @@
 
 SCENES_URL = "https://docs.google.com/spreadsheets/d/1Te9oo6jeUPW_tof0Qr3y9-36qcnQWxsg_xJbFaSSuNM/edit?gid=0#gid=0"
 
-# MODE = "windows"
-MODE = "linux"
+MODE = "windows"
+# MODE = "linux"
 
 if MODE == "linux":
     OBS_SCENES_DIRECTORY = "./scenes/"
