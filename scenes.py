@@ -92,7 +92,7 @@ def generate_scenes(url, scenelist_name):
 
     pdf_url = f"file:///{pdf_slides_directory}Slides-{scenelist_name}.pdf#toolbar=0"
 
-    fname = f"{obs_scenes_directory}/{templates_fname}"
+    fname = f"{obs_scenes_directory}/{templates_fname}.json"
     with open(fname, "r", encoding="utf-8") as file:
         templates = json.load(file)
 
