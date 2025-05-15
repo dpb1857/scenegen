@@ -92,13 +92,13 @@ def generate_scenes(url, scenelist_name):
 
     pdf_url = f"file:///{pdf_slides_directory}Slides-{scenelist_name}.pdf#toolbar=0"
 
-    fname = f"{obs_scenes_directory}/{templates_fname}.json"
+    fname = f"{obs_scenes_directory}/{templates_fname}"
     with open(fname, "r", encoding="utf-8") as file:
         templates = json.load(file)
 
     scenes = _generate_scenes(runlist_data, templates, scenelist_name, pdf_url)
 
-    with open(f"{obs_scenes_directory}/{scenelist_name}", "w", encoding="utf-8") as file:
+    with open(f"{obs_scenes_directory}/{scenelist_name}.json", "w", encoding="utf-8") as file:
         json.dump(scenes, file, indent=4, ensure_ascii=False)
 
 def download_pdf(url, filename):
