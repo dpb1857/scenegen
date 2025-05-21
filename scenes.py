@@ -9,12 +9,14 @@
 
 import copy
 import json
+import os
 import uuid
 
 import apikey
 import config
 import google_drive as gd
 import google_sheets as gs
+import process_util
 
 
 def generate_scene(scene_name, template_name, pagenum, templates, pdf_url):
@@ -98,12 +100,19 @@ def generate_scenes(url, scenelist_name):
 
     scenes = _generate_scenes(runlist_data, templates, scenelist_name, pdf_url)
 
-    with open(f"{obs_scenes_directory}/{scenelist_name}.json", "w", encoding="utf-8") as file:
+    # If OBS is running and the scenes file already exists,
+    # OBS may already be aware of the file.
+    # In that case, it is not safe to write it because OBS may just overwrite our changes.
+
+    scenelist_filename = f"{obs_scenes_directory}/{scenelist_name}.json"
+    if os.path.exists(scenelist_filename) and process_util.obs_is_running():
+        raise Exception("OBS is running, cannout write scenes file")
+
+    with open(scenelist_filename, "w", encoding="utf-8") as file:
         json.dump(scenes, file, indent=4, ensure_ascii=False)
 
 def download_pdf(url, filename):
     pdf_slides_directory = config.PDF_SLIDES_DIRECTORY
-
     pdf_filename = f"{pdf_slides_directory}Slides-{filename}.pdf"
 
     pdf_url_data = gs.download_sheet(url)
