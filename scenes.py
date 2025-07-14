@@ -18,8 +18,14 @@ import google_drive as gd
 import google_sheets as gs
 import process_util
 
+Scene_counter = 0
 
 def generate_scene(scene_name, template_name, pagenum, templates, pdf_url):
+
+    def numbered_scene(scene_name):
+        global Scene_counter
+        Scene_counter += 1
+        return f"{Scene_counter:2d} {scene_name}"
 
     def create_custom_browser():
         name = f"Browser{scene_name}"
@@ -55,7 +61,7 @@ def generate_scene(scene_name, template_name, pagenum, templates, pdf_url):
         raise Exception(f"Could not find scene template {template_name}")
 
     # print("Processing:", name, template, page)
-    scene = create_scene_from_template(scene_name, template_name)
+    scene = create_scene_from_template(numbered_scene(scene_name), template_name)
     b = None
     scene_browser_item = find_scene_browser(scene)
     if scene_browser_item:
