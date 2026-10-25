@@ -1,0 +1,8 @@
+
+This directory contains an application that reads data from a Google Sheet and creates OBS scene files.
+The version you currently see in this directory works on Windows.
+I need you do update this program and create a version that works in our current environment under MacOS.
+The program should be installed into a system directory and not be run out of a home directory.
+To install the program, please create a Makefile with a target 'install' that takes the proper actions
+to install the script.
+Ask any questions you may have.
