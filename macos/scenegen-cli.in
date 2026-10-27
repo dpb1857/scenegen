@@ -1,0 +1,4 @@
+#!/bin/sh
+# Command-line launcher installed by 'make install'. Runs the app's own
+# executable so the Dock shows Scenegen's icon and name.
+exec "@APP@/Contents/MacOS/Scenegen" "$@"

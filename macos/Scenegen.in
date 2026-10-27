@@ -1,0 +1,8 @@
+#!/bin/sh
+# Scenegen.app's executable, installed by 'make install'.
+#
+# Scenegen-python is a copy of Homebrew's Python.app interpreter. Running a
+# copy inside this bundle (rather than Homebrew's python3, which re-launches
+# its own Python.app) makes the Dock show Scenegen's icon and name.
+PYTHONPATH="@LIBDIR@/venv/lib/python@PYVERSION@/site-packages" \
+    exec "@APP@/Contents/MacOS/Scenegen-python" "@LIBDIR@/input_dialog.py" "$@"

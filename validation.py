@@ -24,5 +24,5 @@ def validate_config():
     if not os.path.isdir(config.PDF_SLIDES_DIRECTORY):
         return missing_path("missing pdf slides directory", config.PDF_SLIDES_DIRECTORY)
 
-    if not os.path.isfile(f"{config.OBS_SCENES_DIRECTORY}{config.TEMPLATES_FNAME}"):
+    if not os.path.isfile(os.path.join(config.OBS_SCENES_DIRECTORY, config.TEMPLATES_FNAME)):
         return missing_path("missing scene templates file", config.TEMPLATES_FNAME)

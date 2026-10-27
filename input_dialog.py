@@ -7,6 +7,8 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=too-many-instance-attributes
 
+import logging
+import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -21,32 +23,15 @@ class SimpleInputDialog:
         self.master = master
         master.title("Download Scene")
 
-        # Set window size and position it in center of screen
-        window_width = 1200  # Doubled from 400 to 800; WIDTH
-        window_height = 200
-        screen_width = master.winfo_screenwidth()
-        screen_height = master.winfo_screenheight()
-        center_x = int(screen_width/2 - window_width/2)
-        center_y = int(screen_height/2 - window_height/2)
-        master.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
-
-        # Modern Windows 11 styling
-        try:
-            self.style = ttk.Style()
-            self.style.theme_use('vista')  # Use vista theme which looks similar to Windows 11
-        except Exception as _e:
-            pass
-
         # Create main frame with padding
-        # self.main_frame = ttk.Frame(master, padding=(20, 10))
-        self.main_frame = ttk.Frame(master, padding=(40, 10))  # Increased horizontal padding from 20 to 40; WIDTH
+        self.main_frame = ttk.Frame(master, padding=(40, 20))
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Add a title label
         self.title_label = ttk.Label(
             self.main_frame,
             text="Enter Scene Generation Information",
-            font=("Segoe UI", 14)
+            font="TkHeadingFont"
         )
         self.title_label.pack(pady=(0, 20))
 
@@ -55,19 +40,19 @@ class SimpleInputDialog:
         self.form_frame.pack(fill=tk.X)
 
         # Scene URL input
-        self.url_label = ttk.Label(self.form_frame, text="Scene URL:", font=("Segoe UI", 10))
+        self.url_label = ttk.Label(self.form_frame, text="Scene URL:")
         self.url_label.grid(row=0, column=0, sticky=tk.W, pady=5)
 
         self.url_var = tk.StringVar(value=default_url)
-        self.url_entry = ttk.Entry(self.form_frame, width=110, textvariable=self.url_var)  # Doubled from 30 to 60; WIDTH
+        self.url_entry = ttk.Entry(self.form_frame, width=100, textvariable=self.url_var)
         self.url_entry.grid(row=0, column=1, sticky=tk.W, pady=5, padx=5)
 
         # Filename input
-        self.filename_label = ttk.Label(self.form_frame, text="Filename:", font=("Segoe UI", 10))
+        self.filename_label = ttk.Label(self.form_frame, text="Filename:")
         self.filename_label.grid(row=1, column=0, sticky=tk.W, pady=5)
 
         self.filename_var = tk.StringVar(value=default_filename)
-        self.filename_entry = ttk.Entry(self.form_frame, width=110, textvariable=self.filename_var)  # Doubled from 30 to 60; WIDTH
+        self.filename_entry = ttk.Entry(self.form_frame, width=100, textvariable=self.filename_var)
         self.filename_entry.grid(row=1, column=1, sticky=tk.W, pady=5, padx=5)
 
         # Button frame
@@ -96,6 +81,20 @@ class SimpleInputDialog:
         # Bind Enter key to submit
         master.bind('<Return>', lambda event: self.submit())
 
+        # Let the window size itself to its contents, then center it
+        master.update_idletasks()
+        width = master.winfo_reqwidth()
+        height = master.winfo_reqheight()
+        x = (master.winfo_screenwidth() - width) // 2
+        y = (master.winfo_screenheight() - height) // 3
+        master.geometry(f"+{x}+{y}")
+        master.resizable(False, False)
+
+        # When started from the Dock the window may open behind other apps
+        master.lift()
+        master.attributes('-topmost', True)
+        master.after(500, lambda: master.attributes('-topmost', False))
+
     def submit(self):
         # Validate inputs
         url = self.url_var.get().strip()
@@ -117,19 +116,20 @@ class SimpleInputDialog:
             return
 
         if (error := validation.validate_config()) is not None:
-            messagebox.showerror("Error", f"Problems with URL: {error}")
-            self.url_entry.focus_set()
+            messagebox.showerror("Error", f"Problems with configuration: {error}")
             return
 
         # Process the information
         try:
             self.process_runlist(url, filename)
+            logging.info("Generated scenes for %s", filename)
             # Show a success message
             messagebox.showinfo(
                 "Success",
                 f"Scenelist generated in {filename}"
             )
         except Exception as e:  # pylint: disable=broad-exception-caught
+            logging.exception("Scene generation failed for %s", filename)
             messagebox.showerror("Error", f"Something went wrong: {e}")
 
         # Close the dialog
@@ -139,7 +139,18 @@ class SimpleInputDialog:
         scenes.generate_scenes(url, filename)
         scenes.download_pdf(url, filename)
 
+def setup_logging():
+    # There is no terminal when started from the Dock, so keep a log
+    logfile = os.path.expanduser("~/Library/Logs/scenegen.log")
+    try:
+        os.makedirs(os.path.dirname(logfile), exist_ok=True)
+        logging.basicConfig(filename=logfile, level=logging.INFO,
+                            format="%(asctime)s %(levelname)s %(message)s")
+    except OSError:
+        logging.basicConfig(level=logging.INFO)
+
 def main():
+    setup_logging()
     root = tk.Tk()
 
     # You can specify default values here

@@ -10,6 +10,7 @@
 import copy
 import json
 import os
+import pathlib
 import uuid
 
 import apikey
@@ -98,9 +99,10 @@ def generate_scenes(url, scenelist_name):
     runlist_url = scenes_map[scenelist_name]
     runlist_data = gs.download_sheet(runlist_url)
 
-    pdf_url = f"file:///{pdf_slides_directory}Slides-{scenelist_name}.pdf#toolbar=0"
+    pdf_path = os.path.join(pdf_slides_directory, f"Slides-{scenelist_name}.pdf")
+    pdf_url = f"{pathlib.Path(pdf_path).as_uri()}#toolbar=0"
 
-    fname = f"{obs_scenes_directory}/{templates_fname}"
+    fname = os.path.join(obs_scenes_directory, templates_fname)
     with open(fname, "r", encoding="utf-8") as file:
         templates = json.load(file)
 
@@ -110,19 +112,29 @@ def generate_scenes(url, scenelist_name):
     # OBS may already be aware of the file.
     # In that case, it is not safe to write it because OBS may just overwrite our changes.
 
-    scenelist_filename = f"{obs_scenes_directory}/{scenelist_name}.json"
+    scenelist_filename = os.path.join(obs_scenes_directory, f"{scenelist_name}.json")
     if os.path.exists(scenelist_filename) and process_util.obs_is_running():
-        raise Exception("OBS is running, cannout write scenes file")
+        raise Exception("OBS is running, cannot write scenes file")
 
     with open(scenelist_filename, "w", encoding="utf-8") as file:
         json.dump(scenes, file, indent=4, ensure_ascii=False)
+    make_group_writable(scenelist_filename)
+
+def make_group_writable(filename):
+    # Other users share these files; the directory ACLs normally take care of
+    # this, but don't rely on it. Only the owner can chmod, so ignore failures.
+    try:
+        os.chmod(filename, 0o664)
+    except OSError:
+        pass
 
 def download_pdf(url, filename):
     pdf_slides_directory = config.PDF_SLIDES_DIRECTORY
-    pdf_filename = f"{pdf_slides_directory}Slides-{filename}.pdf"
+    pdf_filename = os.path.join(pdf_slides_directory, f"Slides-{filename}.pdf")
 
     pdf_url_data = gs.download_sheet(url)
     pdf_map = dict(pdf_url_data)
     if filename in pdf_map:
         pdf_url = pdf_map[filename]
-        gd.download_to_local_filesystem(pdf_url, pdf_filename)
+        if gd.download_to_local_filesystem(pdf_url, pdf_filename):
+            make_group_writable(pdf_filename)
